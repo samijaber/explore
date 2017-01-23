@@ -8,12 +8,12 @@ const defStyle: React.CSSProperties = {
 };
 
 interface ImageFlexRowProps {
-  imgUrls: Array<string>;
+  photos: Array<any>;
 }
 
 export const ImageFlexRow = (props: ImageFlexRowProps) => {
-  const ThumbnailList = props.imgUrls.map(url =>
-    <Thumbnail imgUrl={url}/>
+  const ThumbnailList = props.photos.map(photo =>
+    <Thumbnail key={photo.id} imgUrl={photo.urls.small}/>
   );
 
   return (
