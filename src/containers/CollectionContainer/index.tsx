@@ -8,6 +8,4 @@ const mapStateToProps = (state: any) => {
   };
 };
 
-export const CollectionContainer = connect(
-  mapStateToProps
-)(Collection);
+export const CollectionContainer = connect(mapStateToProps)(Collection);

@@ -2,15 +2,14 @@ import { createStore, applyMiddleware, compose, Store } from 'redux';
 import * as createLogger from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
 
-import { rootReducer } from './reducers';
-import { selectCollection, fetchCollection } from './actions/collection';
-import { fetchPhotos } from './actions/photos';
+import { rootReducer } from '../reducers';
 
 const loggerMiddleware = createLogger();
+// tslint:disable-next-line
 const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compose;
 
 export default function configureStore(preloadedState?: any): Store<any> {
-  const store = createStore(
+  return createStore(
     rootReducer,
     preloadedState,
     composeEnhancers(
@@ -20,8 +19,4 @@ export default function configureStore(preloadedState?: any): Store<any> {
       )
     )
   );
-  store.dispatch(selectCollection('121'));
-  store.dispatch(fetchCollection('121'));
-  store.dispatch(fetchPhotos('121'));
-  return store;
 }

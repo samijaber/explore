@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-// import * as Redux from 'redux';
-import { selectCollection, fetchCollection } from '../../actions/collection';
-import { fetchPhotos } from '../../actions/photos';
+
+import {
+  selectCollection, fetchCollectionIfNeeded,
+  fetchRelatedCollectionsIfNeeded
+} from '../../actions/collection';
+import { fetchPhotosIfNeeded } from '../../actions/photos';
 
 let RequestCollectionContainerComp = (props: any) => {
   let input: any;
@@ -16,8 +19,9 @@ let RequestCollectionContainerComp = (props: any) => {
             return;
           }
           props.dispatch(selectCollection(input.value));
-          props.dispatch(fetchCollection(input.value));
-          props.dispatch(fetchPhotos(input.value));
+          props.dispatch(fetchCollectionIfNeeded(input.value));
+          props.dispatch(fetchPhotosIfNeeded(input.value));
+          props.dispatch(fetchRelatedCollectionsIfNeeded(input.value));
           input.value = '';
         }}
       >

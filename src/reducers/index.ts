@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 import {
   RECEIVE_COLLECTION, REQUEST_COLLECTION,
-  SELECT_COLLECTION
+  SELECT_COLLECTION, RECEIVE_RELATED_COLLECTIONS
 } from '../actions/collection';
 import { RECEIVE_PHOTOS } from '../actions/photos';
 
@@ -18,7 +18,9 @@ function selectedCollection(state: any = {}, action: any) {
 function collection(
   state: any = {
     isFetching: false,
-    metadata: {}
+    metadata: {},
+    photos: [],
+    collectionIds: []
   },
   action: any) {
   switch (action.type) {
@@ -33,10 +35,14 @@ function collection(
         isFetching: false,
         metadata: action.collection
       };
+    case RECEIVE_RELATED_COLLECTIONS:
+      return {
+        ...state,
+        collectionIds: action.collectionIds
+      };
     case RECEIVE_PHOTOS:
       return {
         ...state,
-        isFetching: false,
         photos: action.photos
       };
     default:
@@ -48,6 +54,7 @@ function collections(state: any = {}, action: any) {
   switch (action.type) {
     case REQUEST_COLLECTION:
     case RECEIVE_COLLECTION:
+    case RECEIVE_RELATED_COLLECTIONS:
     case RECEIVE_PHOTOS:
       return Object.assign({}, state, {
         [action.collection.id]: collection(state[action.collection.id], action)
