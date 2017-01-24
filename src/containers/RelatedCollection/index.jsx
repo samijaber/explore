@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 
 import { CollectionMetadata } from '../../components/CollectionMetadata';
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state, ownProps) => {
   return {
     ...state.collections[ownProps.id].metadata
   };

@@ -1,19 +1,14 @@
 {
-  "name": "ts-app",
+  "name": "unsplash-discover-es6",
   "version": "0.1.0",
   "private": true,
+  "eslintConfig": {
+    "extends": "react-app"
+  },
   "devDependencies": {
-    "react-scripts-ts": "1.0.4"
+    "react-scripts": "0.8.5"
   },
   "dependencies": {
-    "@types/isomorphic-fetch": "^0.0.32",
-    "@types/jest": "^16.0.4",
-    "@types/lodash": "^4.14.50",
-    "@types/node": "^7.0.2",
-    "@types/react": "^15.0.1",
-    "@types/react-dom": "^0.14.20",
-    "@types/react-redux": "^4.4.35",
-    "@types/redux-logger": "^2.6.33",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "react": "^15.4.2",
@@ -23,11 +18,12 @@
     "redux-logger": "^2.7.4",
     "redux-thunk": "^2.2.0",
     "unsplash-js": "^4.5.0"
+
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   }
 }

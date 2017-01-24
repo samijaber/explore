@@ -43,7 +43,7 @@ function collection(
         ...state,
         collectionIds: action.collectionIds
       };
-    case REQUEST_COLLECTION:
+    case REQUEST_PHOTOS:
       return {
         ...state,
         isFetchingPhotos: true

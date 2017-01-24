@@ -1,10 +1,10 @@
-import * as React from 'react';
+import React from 'react';
 
 import { ImageFlexRow } from '../ImageFlexRow';
 import { CollectionMetadata } from '../CollectionMetadata';
 import { RelatedCollection } from '../../containers/RelatedCollection';
 
-const flexStyle: React.CSSProperties = {
+const flexStyle = {
   display: 'flex',
   justifyContent: 'space-around'
 };

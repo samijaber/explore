@@ -1,9 +1,7 @@
-import * as Redux from 'redux';
-
-import {unsplash, toJson} from './unsplash-api';
+import {unsplash, toJson} from '../utils/unsplash';
 
 export const REQUEST_PHOTOS = 'REQUEST_PHOTOS';
-function requestPhotos(collectionId: string) {
+function requestPhotos(collectionId) {
   return {
     type: REQUEST_PHOTOS,
     collection: {
@@ -13,7 +11,7 @@ function requestPhotos(collectionId: string) {
 }
 
 export const RECEIVE_PHOTOS = 'RECEIVE_PHOTOS';
-function receivePhotos(collectionId: string, photos) {
+function receivePhotos(collectionId, photos) {
   return {
     type: RECEIVE_PHOTOS,
     collection: {
@@ -23,8 +21,8 @@ function receivePhotos(collectionId: string, photos) {
   };
 }
 
-function fetchPhotos(collectionId: string) {
-  return function (dispatch: Redux.Dispatch<any>) {
+function fetchPhotos(collectionId) {
+  return function (dispatch) {
     dispatch(requestPhotos(collectionId));
     return unsplash.collections.getCollectionPhotos(collectionId, 1, 10, 'popular')
       .then(toJson)
@@ -34,7 +32,7 @@ function fetchPhotos(collectionId: string) {
   };
 }
 
-function shouldFetchPhotos(state, collectionId: string) {
+function shouldFetchPhotos(state, collectionId) {
   const collection = state.collections[collectionId];
   if (
     collection.isFetchingPhotos === true ||
@@ -46,7 +44,7 @@ function shouldFetchPhotos(state, collectionId: string) {
   }
 }
 
-export function fetchPhotosIfNeeded(collectionId: string) {
+export function fetchPhotosIfNeeded(collectionId) {
   return (dispatch, getState) => {
     if (shouldFetchPhotos(getState(), collectionId)) {
       return dispatch(fetchPhotos(collectionId));
