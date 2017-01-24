@@ -1,80 +1,57 @@
 import { combineReducers } from 'redux'
+import { normalize } from 'normalizr'
+import _ from 'lodash'
 
 import {
-  RECEIVE_COLLECTION, REQUEST_COLLECTION,
-  SELECT_COLLECTION, RECEIVE_RELATED_COLLECTIONS
-} from '../actions/collection'
-import {
-  REQUEST_PHOTOS, RECEIVE_PHOTOS
-} from '../actions/photos'
+  REQUEST_PHOTO, RECEIVE_PHOTO,
+  SELECT_PHOTO
+} from '../actions'
+import { entitySchema } from '../store/schema'
 
-function selectedCollection(state = {}, action) {
+function selectedPhoto(state = null, action) {
   switch (action.type) {
-    case SELECT_COLLECTION:
-      return action.collection.id
+    case SELECT_PHOTO:
+      return action.photoId
     default:
       return state
   }
 }
 
-function collection(
-  state = {
-    isFetchingMetadata: false,
-    isFetchingPhotos: false,
-    metadata: {},
-    photos: [],
-    collectionIds: []
-  },
-  action) {
-  switch (action.type) {
-    case REQUEST_COLLECTION:
-      return {
-        ...state,
-        isFetchingMetadata: true
-      }
-    case RECEIVE_COLLECTION:
-      return {
-        ...state,
-        isFetchingMetadata: false,
-        metadata: action.collection
-      }
-    case RECEIVE_RELATED_COLLECTIONS:
-      return {
-        ...state,
-        collectionIds: action.collectionIds
-      }
-    case REQUEST_PHOTOS:
-      return {
-        ...state,
-        isFetchingPhotos: true
-      }
-    case RECEIVE_PHOTOS:
-      return {
-        ...state,
-        isFetchingPhotos: false,
-        photos: action.photos
-      }
-    default:
-      return state
+function usersOrCategories(state = {}, action) {
+  /*
+  // This function will merge two instances of an entity,
+  // while correctly concatenating its photos IDs array
+  */
+  function mergeStrategy(entityA = {}, entityB = {}) {
+    return {
+      ...entityA,
+      ...entityB,
+      photos: [ ...(entityA.photos || []), ...(entityB.photos || [])]
+    }
   }
+
+  return _.mergeWith({}, state, action, mergeStrategy)
 }
 
-function collections(state = {}, action) {
+function photos(state = {}, action) {
+  return { ...state, ...action }
+}
+
+function entities(state = {}, action) {
   switch (action.type) {
-    case REQUEST_COLLECTION:
-    case RECEIVE_COLLECTION:
-    case RECEIVE_RELATED_COLLECTIONS:
-    case REQUEST_PHOTOS:
-    case RECEIVE_PHOTOS:
-      return Object.assign({}, state, {
-        [action.collection.id]: collection(state[action.collection.id], action)
-      })
+    case RECEIVE_PHOTO:
+      let normalizedData = normalize(action.photo, entitySchema).entities
+      return {
+        categories: usersOrCategories(state.categories, normalizedData.categories),
+        users: usersOrCategories(state.users, normalizedData.users),
+        photos: photos(state.photos, normalizedData.photos)
+      }
     default:
       return state
   }
 }
 
 export const rootReducer = combineReducers({
-  collections,
-  selectedCollection
+  selectedPhoto,
+  entities
 })
