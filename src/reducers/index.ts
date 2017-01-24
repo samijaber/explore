@@ -4,9 +4,11 @@ import {
   RECEIVE_COLLECTION, REQUEST_COLLECTION,
   SELECT_COLLECTION, RECEIVE_RELATED_COLLECTIONS
 } from '../actions/collection';
-import { RECEIVE_PHOTOS } from '../actions/photos';
+import {
+  REQUEST_PHOTOS, RECEIVE_PHOTOS
+} from '../actions/photos';
 
-function selectedCollection(state: any = {}, action: any) {
+function selectedCollection(state = {}, action) {
   switch (action.type) {
     case SELECT_COLLECTION:
       return action.collection.id;
@@ -16,23 +18,24 @@ function selectedCollection(state: any = {}, action: any) {
 }
 
 function collection(
-  state: any = {
-    isFetching: false,
+  state = {
+    isFetchingMetadata: false,
+    isFetchingPhotos: false,
     metadata: {},
     photos: [],
     collectionIds: []
   },
-  action: any) {
+  action) {
   switch (action.type) {
     case REQUEST_COLLECTION:
       return {
         ...state,
-        isFetching: true
+        isFetchingMetadata: true
       };
     case RECEIVE_COLLECTION:
       return {
         ...state,
-        isFetching: false,
+        isFetchingMetadata: false,
         metadata: action.collection
       };
     case RECEIVE_RELATED_COLLECTIONS:
@@ -40,9 +43,15 @@ function collection(
         ...state,
         collectionIds: action.collectionIds
       };
+    case REQUEST_COLLECTION:
+      return {
+        ...state,
+        isFetchingPhotos: true
+      };
     case RECEIVE_PHOTOS:
       return {
         ...state,
+        isFetchingPhotos: false,
         photos: action.photos
       };
     default:
@@ -50,11 +59,12 @@ function collection(
   }
 }
 
-function collections(state: any = {}, action: any) {
+function collections(state = {}, action) {
   switch (action.type) {
     case REQUEST_COLLECTION:
     case RECEIVE_COLLECTION:
     case RECEIVE_RELATED_COLLECTIONS:
+    case REQUEST_PHOTOS:
     case RECEIVE_PHOTOS:
       return Object.assign({}, state, {
         [action.collection.id]: collection(state[action.collection.id], action)

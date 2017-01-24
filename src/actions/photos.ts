@@ -1,5 +1,4 @@
 import * as Redux from 'redux';
-import * as _ from 'lodash';
 
 import {unsplash, toJson} from './unsplash-api';
 
@@ -14,7 +13,7 @@ function requestPhotos(collectionId: string) {
 }
 
 export const RECEIVE_PHOTOS = 'RECEIVE_PHOTOS';
-function receivePhotos(collectionId: string, photos: any) {
+function receivePhotos(collectionId: string, photos) {
   return {
     type: RECEIVE_PHOTOS,
     collection: {
@@ -29,29 +28,28 @@ function fetchPhotos(collectionId: string) {
     dispatch(requestPhotos(collectionId));
     return unsplash.collections.getCollectionPhotos(collectionId, 1, 10, 'popular')
       .then(toJson)
-      .then((data: any) => {
-        const photos = _.map(_.take(data, 3), photoData =>
-          _.pick(photoData, ['id', 'urls', 'categories'])
-        );
-        dispatch(receivePhotos(collectionId, photos));
+      .then(data => {
+        dispatch(receivePhotos(collectionId, data));
       });
   };
 }
 
-function shouldFetchPhotos(state: any, collectionId: string) {
+function shouldFetchPhotos(state, collectionId: string) {
   const collection = state.collections[collectionId];
-  if (collection == null || collection.photos == null) {
-    return true;
-  } else {
+  if (
+    collection.isFetchingPhotos === true ||
+    collection.photos.length > 0
+  ) {
     return false;
+  } else {
+    return true;
   }
 }
 
 export function fetchPhotosIfNeeded(collectionId: string) {
-  return (dispatch: any, getState: any) => {
+  return (dispatch, getState) => {
     if (shouldFetchPhotos(getState(), collectionId)) {
       return dispatch(fetchPhotos(collectionId));
     }
   };
 }
-

@@ -3,6 +3,7 @@ import * as fetch from 'isomorphic-fetch';
 import * as _ from 'lodash';
 
 import {unsplash, toJson} from './unsplash-api';
+import {fetchPhotosIfNeeded} from './photos';
 
 export const SELECT_COLLECTION = 'SELECT_COLLECTION';
 export function selectCollection(collectionId: string) {
@@ -25,7 +26,7 @@ function requestCollection(collectionId: string) {
 }
 
 export const RECEIVE_COLLECTION = 'RECEIVE_COLLECTION';
-function receiveCollection(collectionId: string, data: any) {
+function receiveCollection(collectionId: string, data) {
   const collection: any = _.pick(data, ['id', 'title', 'description']);
   const related: boolean = collection.id === collectionId ? false : true;
 
@@ -37,8 +38,8 @@ function receiveCollection(collectionId: string, data: any) {
 }
 
 export const RECEIVE_RELATED_COLLECTIONS = 'RECEIVE_RELATED_COLLECTIONS';
-function receiveRelatedCollections(collectionId: string, data: any) {
-  const collectionIds: Array<number> = _.map(data, (collectionData: any) => collectionData.id);
+function receiveRelatedCollections(collectionId: string, data) {
+  const collectionIds = _.map(data, (collectionData: any) => collectionData.id);
 
   return {
     type: RECEIVE_RELATED_COLLECTIONS,
@@ -56,23 +57,23 @@ function fetchCollection(collectionId: string) {
 
     return unsplash.collections.getCollection(collectionId)
       .then(toJson)
-      .then((data: any) => {
+      .then(data => {
         dispatch(receiveCollection(collectionId, data));
       });
   };
 }
 
-function shouldFetchCollection(state: any, collectionId: string) {
+function shouldFetchCollection(state, collectionId: string) {
   const collection = state.collections[collectionId];
-  if (collection == null || collection.metadata == null) {
+  if (collection == null) {
     return true;
   } else {
     return false;
   }
 }
 
-export function fetchCollectionIfNeeded(collectionId: string) {
-  return (dispatch: any, getState: any) => {
+function fetchCollectionIfNeeded(collectionId: string) {
+  return (dispatch, getState) => {
     if (shouldFetchCollection(getState(), collectionId)) {
       return dispatch(fetchCollection(collectionId));
     }
@@ -88,27 +89,38 @@ function fetchRelatedCollections(collectionId: string) {
     return fetch(url + queryParam)
       .then(toJson)
       .then((data: any) => {
-        dispatch(receiveRelatedCollections(collectionId, data));
-        data.forEach((collectionData: any) =>
+        // dispatch individual collection recieval first
+        data.forEach((collectionData) =>
           dispatch(receiveCollection(collectionId, collectionData))
         );
+        // dispatch recieval of related IDs now
+        dispatch(receiveRelatedCollections(collectionId, data));
       });
   };
 }
 
-function shouldFetchRelatedCollections(state: any, collectionId: string) {
+function shouldFetchRelatedCollections(state, collectionId: string) {
   const collection = state.collections[collectionId];
-  if (collection == null || collection.collectionIds == null) {
+  if (collection.collectionIds.length === 0) {
     return true;
   } else {
     return false;
   }
 }
 
-export function fetchRelatedCollectionsIfNeeded(collectionId: string) {
-  return (dispatch: any, getState: any) => {
+function fetchRelatedCollectionsIfNeeded(collectionId: string) {
+  return (dispatch, getState) => {
     if (shouldFetchRelatedCollections(getState(), collectionId)) {
       return dispatch(fetchRelatedCollections(collectionId));
     }
+  };
+}
+
+export function selectAndFetchCollection(collectionId: string) {
+  return (dispatch) => {
+    dispatch(selectCollection(collectionId));
+    dispatch(fetchCollectionIfNeeded(collectionId));
+    dispatch(fetchPhotosIfNeeded(collectionId));
+    dispatch(fetchRelatedCollectionsIfNeeded(collectionId));
   };
 }

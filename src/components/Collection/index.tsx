@@ -9,23 +9,24 @@ const flexStyle: React.CSSProperties = {
   justifyContent: 'space-around'
 };
 
-export const Collection = (props: any) => {
-  if (props.collection == null) {
+export const Collection = ({collection}) => {
+  if (collection == null) {
     return <h1> Start by choosing a collection! </h1>;
-  } else if (props.collection.isFetching === true) {
+  } else if (
+    collection.isFetchingMetadata === true ||
+    collection.collectionIds == null ||
+    collection.photos == null
+  ) {
     return <h1> Loading... </h1>;
   } else {
-    const relatedCollectionsList = props.collection.collectionIds.map( (id: any) =>
+    const relatedCollectionsList = collection.collectionIds.map(id =>
       <RelatedCollection key={id} id={id}/>
     );
 
     return (
       <div>
-        <CollectionMetadata {...props.collection.metadata} />
-        <div>
-          {props.collection.metadata.description}
-        </div>
-        <ImageFlexRow photos={props.collection.photos.slice(0,3)}/>
+        <CollectionMetadata {...collection.metadata} />
+        <ImageFlexRow photos={collection.photos.slice(0,3)}/>
         <div>
           <h1>Related Collections:</h1>
           <div style={flexStyle}>

@@ -1,24 +1,21 @@
 import * as React from 'react';
 
-import { Thumbnail } from '../Thumbnail';
+import { Image } from '../Image';
 
 const defStyle: React.CSSProperties = {
   display: 'flex',
-  justifyContent: 'space-around'
+  justifyContent: 'space-around',
+  alignItems: 'center'
 };
 
-interface ImageFlexRowProps {
-  photos: Array<any>;
-}
-
-export const ImageFlexRow = (props: ImageFlexRowProps) => {
-  const ThumbnailList = props.photos.map(photo =>
-    <Thumbnail key={photo.id} imgUrl={photo.urls.small}/>
+export const ImageFlexRow = ({photos}) => {
+  const ImageList = photos.map(photo =>
+    <Image key={photo.id} imgUrl={photo.urls.small}/>
   );
 
   return (
     <div style={defStyle}>
-      {ThumbnailList}
+      {ImageList}
     </div>
   );
 };

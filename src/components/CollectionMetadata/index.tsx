@@ -4,7 +4,7 @@ const defStyle: React.CSSProperties = {
   textAlign: 'center'
 };
 
-export const CollectionMetadata = (props: any) =>
+export const CollectionMetadata = ({id, title}) =>
   <h1 style={defStyle}>
-    Collection #{props.id}: {props.title}
+    Collection #{id}: {title}
   </h1>;

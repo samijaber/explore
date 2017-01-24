@@ -1,13 +1,13 @@
 import * as React from 'react';
 
 const defStyle: React.CSSProperties = {
-  width: '300px',
-  height: '300px'
+  width: 'auto',
+  height: '100%'
 };
 
-interface ThumbnailProps {
+interface ImageProps {
   imgUrl: string;
 }
 
-export const Thumbnail = (props: ThumbnailProps) =>
+export const Image = (props: ImageProps) =>
   <img src={props.imgUrl} style={defStyle} />;

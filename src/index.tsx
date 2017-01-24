@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 
 import configureStore from './store/configureStore';
 import { initState } from './store/initState';
-import {AsyncApp} from './containers/AsyncApp';
+import {App} from './components/App';
 
 import './index.css';
 
@@ -12,7 +12,7 @@ const store = configureStore(initState);
 
 ReactDOM.render(
   <Provider store={store}>
-    <AsyncApp />
+    <App />
   </Provider>,
   document.getElementById('root') as HTMLElement
 );
