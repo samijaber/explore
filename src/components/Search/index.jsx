@@ -1,15 +1,15 @@
-import React from 'react';
+import React from 'react'
 
 export const Search = ({handleClick}) => {
-  let input;
+  let input
 
   return (
     <div>
       <form
         onSubmit={e => {
-          e.preventDefault();
-          handleClick(input.value);
-          input.value = '';
+          e.preventDefault()
+          handleClick(input.value)
+          input.value = ''
         }}
       >
       <input
@@ -20,5 +20,5 @@ export const Search = ({handleClick}) => {
       </button>
       </form>
     </div>
-  );
-};
+  )
+}

@@ -27,7 +27,7 @@ function requestCollection(collectionId) {
 export const RECEIVE_COLLECTION = 'RECEIVE_COLLECTION';
 function receiveCollection(collectionId, data) {
   const collection = _.pick(data, ['id', 'title', 'description']);
-  const related: boolean = collection.id === collectionId ? false : true;
+  const related = collection.id === collectionId ? false : true;
 
   return {
     type: RECEIVE_COLLECTION,
@@ -38,7 +38,7 @@ function receiveCollection(collectionId, data) {
 
 export const RECEIVE_RELATED_COLLECTIONS = 'RECEIVE_RELATED_COLLECTIONS';
 function receiveRelatedCollections(collectionId, data) {
-  const collectionIds = _.map(data, (collectionData) => collectionData.id);
+  const collectionIds = _.map(data, collectionData => collectionData.id);
 
   return {
     type: RECEIVE_RELATED_COLLECTIONS,

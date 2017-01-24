@@ -1,11 +1,11 @@
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 
-import { Collection } from '../../components/Collection';
+import { Collection } from '../../components/Collection'
 
 const mapStateToProps = (state) => {
   return {
     collection: state.collections[state.selectedCollection]
-  };
-};
+  }
+}
 
-export const CollectionContainer = connect(mapStateToProps)(Collection);
+export const CollectionContainer = connect(mapStateToProps)(Collection)

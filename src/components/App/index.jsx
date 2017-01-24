@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
-import './App.css';
+import './App.css'
 
-import { CollectionContainer } from '../../containers/CollectionContainer';
-import { CollectionSearch } from '../../containers/CollectionSearch';
+import { CollectionContainer } from '../../containers/CollectionContainer'
+import { CollectionSearch } from '../../containers/CollectionSearch'
 
 export const App = () => {
   return (
@@ -11,5 +11,5 @@ export const App = () => {
       <CollectionSearch />
       <CollectionContainer />
     </div>
-  );
-};
+  )
+}
