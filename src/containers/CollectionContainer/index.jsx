@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 
 import { Collection } from '../../components/Collection';
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state) => {
   return {
     collection: state.collections[state.selectedCollection]
   };

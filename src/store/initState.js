@@ -1,4 +1,3 @@
-// tslint:disable
 export const initState = {
   collections: {
     '1264': {
