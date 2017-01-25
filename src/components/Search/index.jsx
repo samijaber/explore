@@ -1,21 +1,11 @@
 import React from 'react'
 
-export const Search = ({searchFor, handleClick}) => {
+export const Search = ({handleClick}) => {
   let input
-
-  let description;
-  switch (searchFor) {
-    case 'initialImage':
-      description = "Use a keyword to start exploring Unsplash!"
-      break;
-    default:
-      description = "Insert a search term."
-      break;
-  }
 
   return (
     <div>
-      {description}
+      Use a keyword to start exploring Unsplash!
       <form
         onSubmit={e => {
           e.preventDefault()

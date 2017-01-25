@@ -1,24 +1,17 @@
 import { connect } from 'react-redux'
 
-import {selectAndFetchCollection} from '../../actions/collection'
-import { fetchPhoto } from '../../actions'
+import { fetchInitialPhoto } from '../../actions'
 import { Search } from '../../components/Search'
-
-const mapStateToProps = () => {
-  return {
-    searchFor: 'initialImage'
-  }
-}
 
 const mapDispatchToProps = (dispatch) => {
   return {
     handleClick: (keyword) => {
-      dispatch(fetchPhoto(keyword))
+      dispatch(fetchInitialPhoto(keyword))
     }
   }
 }
 
 export const InitialPhotoSearch = connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(Search)

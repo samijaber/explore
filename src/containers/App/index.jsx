@@ -3,14 +3,14 @@ import { connect } from 'react-redux'
 
 import './App.css'
 
-import { CentralPhoto } from '../../containers/CentralPhoto'
+import { Graph } from '../../containers/Graph'
 import { InitialPhotoSearch } from '../../containers/InitialPhotoSearch'
 
-const AppComp = ({selectedPhoto}) => {
+const AppComponent = ({selectedPhoto}) => {
   if (selectedPhoto) {
     return (
     <div className="App">
-      <CentralPhoto />
+      <Graph />
     </div>
     )
 
@@ -29,4 +29,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export const App = connect(mapStateToProps)(AppComp)
+export const App = connect(mapStateToProps)(AppComponent)

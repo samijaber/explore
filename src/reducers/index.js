@@ -3,15 +3,43 @@ import { normalize } from 'normalizr'
 import _ from 'lodash'
 
 import {
-  REQUEST_PHOTO, RECEIVE_PHOTO,
-  SELECT_PHOTO
+  REQUEST_PHOTOS, RECEIVE_PHOTOS, SELECT_PHOTO
 } from '../actions'
-import { entitySchema } from '../store/schema'
+import { entitySchema, formatData } from '../store/schema'
+
+/*
+// describes how the next search will be done
+// can either be 'user' to search photos by same author
+// or 'category' to search photos by same category
+*/
+function nextStep(state = 'user', action) {
+  switch (action.type) {
+    case RECEIVE_PHOTOS:
+      return action.nextStep || state
+    default:
+      return state
+  }
+}
 
 function selectedPhoto(state = null, action) {
   switch (action.type) {
     case SELECT_PHOTO:
       return action.photoId
+    default:
+      return state
+  }
+}
+
+function relatedPhotos(state = [], action) {
+  switch (action.type) {
+    case SELECT_PHOTO:
+      return []
+    case RECEIVE_PHOTOS:
+      if (action.related === true) {
+        return _.map(action.photos, photo => photo.id)
+      } else {
+        return state
+      }
     default:
       return state
   }
@@ -39,8 +67,9 @@ function photos(state = {}, action) {
 
 function entities(state = {}, action) {
   switch (action.type) {
-    case RECEIVE_PHOTO:
-      let normalizedData = normalize(action.photo, entitySchema).entities
+    case RECEIVE_PHOTOS:
+      const data = _.map(action.photos, formatData)
+      const normalizedData = normalize(data, entitySchema).entities
       return {
         categories: usersOrCategories(state.categories, normalizedData.categories),
         users: usersOrCategories(state.users, normalizedData.users),
@@ -53,5 +82,7 @@ function entities(state = {}, action) {
 
 export const rootReducer = combineReducers({
   selectedPhoto,
+  nextStep,
+  relatedPhotos,
   entities
 })
