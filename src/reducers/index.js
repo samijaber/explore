@@ -1,80 +1,88 @@
 import { combineReducers } from 'redux'
+import { normalize } from 'normalizr'
+import _ from 'lodash'
 
 import {
-  RECEIVE_COLLECTION, REQUEST_COLLECTION,
-  SELECT_COLLECTION, RECEIVE_RELATED_COLLECTIONS
-} from '../actions/collection'
-import {
-  REQUEST_PHOTOS, RECEIVE_PHOTOS
-} from '../actions/photos'
+  REQUEST_PHOTOS, RECEIVE_PHOTOS, SELECT_PHOTO
+} from '../actions'
+import { entitySchema, formatData } from '../store/schema'
 
-function selectedCollection(state = {}, action) {
+/*
+// describes how the next search will be done
+// can either be 'user' to search photos by same author
+// or 'category' to search photos by same category
+*/
+function nextStep(state = 'user', action) {
   switch (action.type) {
-    case SELECT_COLLECTION:
-      return action.collection.id
+    case RECEIVE_PHOTOS:
+      return action.nextStep || state
     default:
       return state
   }
 }
 
-function collection(
-  state = {
-    isFetchingMetadata: false,
-    isFetchingPhotos: false,
-    metadata: {},
-    photos: [],
-    collectionIds: []
-  },
-  action) {
+function selectedPhoto(state = null, action) {
   switch (action.type) {
-    case REQUEST_COLLECTION:
-      return {
-        ...state,
-        isFetchingMetadata: true
-      }
-    case RECEIVE_COLLECTION:
-      return {
-        ...state,
-        isFetchingMetadata: false,
-        metadata: action.collection
-      }
-    case RECEIVE_RELATED_COLLECTIONS:
-      return {
-        ...state,
-        collectionIds: action.collectionIds
-      }
-    case REQUEST_PHOTOS:
-      return {
-        ...state,
-        isFetchingPhotos: true
-      }
+    case SELECT_PHOTO:
+      return action.photoId
+    default:
+      return state
+  }
+}
+
+function relatedPhotos(state = [], action) {
+  switch (action.type) {
+    case SELECT_PHOTO:
+      return []
     case RECEIVE_PHOTOS:
-      return {
-        ...state,
-        isFetchingPhotos: false,
-        photos: action.photos
+      if (action.related === true) {
+        return _.map(action.photos, photo => photo.id)
+      } else {
+        return state
       }
     default:
       return state
   }
 }
 
-function collections(state = {}, action) {
+function usersOrCategories(state = {}, action) {
+  /*
+  // This function will merge two instances of an entity,
+  // while correctly concatenating its photos IDs array
+  */
+  function mergeStrategy(entityA = {}, entityB = {}) {
+    return {
+      ...entityA,
+      ...entityB,
+      photos: [ ...(entityA.photos || []), ...(entityB.photos || [])]
+    }
+  }
+
+  return _.mergeWith({}, state, action, mergeStrategy)
+}
+
+function photos(state = {}, action) {
+  return { ...state, ...action }
+}
+
+function entities(state = {}, action) {
   switch (action.type) {
-    case REQUEST_COLLECTION:
-    case RECEIVE_COLLECTION:
-    case RECEIVE_RELATED_COLLECTIONS:
-    case REQUEST_PHOTOS:
     case RECEIVE_PHOTOS:
-      return Object.assign({}, state, {
-        [action.collection.id]: collection(state[action.collection.id], action)
-      })
+      const data = _.map(action.photos, formatData)
+      const normalizedData = normalize(data, entitySchema).entities
+      return {
+        categories: usersOrCategories(state.categories, normalizedData.categories),
+        users: usersOrCategories(state.users, normalizedData.users),
+        photos: photos(state.photos, normalizedData.photos)
+      }
     default:
       return state
   }
 }
 
 export const rootReducer = combineReducers({
-  collections,
-  selectedCollection
+  selectedPhoto,
+  nextStep,
+  relatedPhotos,
+  entities
 })

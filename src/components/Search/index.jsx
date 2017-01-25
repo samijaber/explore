@@ -5,6 +5,7 @@ export const Search = ({handleClick}) => {
 
   return (
     <div>
+      Use a keyword to start exploring Unsplash!
       <form
         onSubmit={e => {
           e.preventDefault()
@@ -16,7 +17,7 @@ export const Search = ({handleClick}) => {
         ref={node => input = node}
       />
       <button type="submit">
-        Show Collection
+        Search
       </button>
       </form>
     </div>

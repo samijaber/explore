@@ -5,5 +5,10 @@ const defStyle = {
   height: '100%'
 }
 
-export const Image = ({imgUrl}) =>
-  <img src={imgUrl} style={defStyle} role="presentation" />
+export const Image = ({url, id, handleClick}) =>
+  <img
+    src={url}
+    style={defStyle}
+    role="presentation"
+    onClick={() => handleClick(id)}
+  />
