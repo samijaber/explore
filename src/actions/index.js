@@ -26,6 +26,14 @@ function selectPhoto(photoId) {
   }
 }
 
+export const DISPLAY_PHOTOS = 'DISPLAY_PHOTOS'
+export function displayPhotos(photoIds) {
+  return {
+    type: DISPLAY_PHOTOS,
+    photoIds
+  }
+}
+
 function fetchUserPhotos(username) {
   return function (dispatch) {
     return unsplash.users.photos(username, 1, 30, 'popular')
@@ -56,20 +64,26 @@ function fetchNextBatch(username) {
   }
 }
 
-export function selectPhotoAndFetchRelated(photoId, username) {
+export function selectPhotoAndFetchRelated(photo) {
   return function (dispatch) {
-    dispatch(selectPhoto(photoId))
-    dispatch(fetchNextBatch(username))
+    dispatch(selectPhoto(photo.id))
+    dispatch(fetchNextBatch(photo.user))
   }
 }
 
 export function initialSearch() {
   return function (dispatch) {
-    return unsplash.photos.getRandomPhoto({ featured: true })
+    return unsplash.photos.listPhotos(1, 50, 'popular')
       .then(toJson)
-      .then( photo => {
-        dispatch(receivePhotos([photo], "random photo"))
-        dispatch(selectPhotoAndFetchRelated(photo.id, photo.user.username))
+      .then( photos => {
+        // pick a photo whose user won't be a dead-end
+        const photo = _.sample(_.reject(photos,
+          photo =>
+            (photo.user.total_likes + photo.user.total_photos > 10) &&
+            photo.user.total_likes > 0
+        ))
+        dispatch(receivePhotos(photos, "initial photo"))
+        dispatch(selectPhotoAndFetchRelated({id: photo.id, user: photo.user.username}))
       })
   }
 }

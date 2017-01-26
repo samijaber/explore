@@ -3,7 +3,7 @@ import { normalize } from 'normalizr'
 import _ from 'lodash'
 
 import {
-  RECEIVE_PHOTOS, SELECT_PHOTO
+  RECEIVE_PHOTOS, SELECT_PHOTO, DISPLAY_PHOTOS
 } from '../actions'
 import { entitySchema, formatData, userMergeStrategy } from '../store/schema'
 
@@ -41,18 +41,29 @@ function photos(state = {}, action) {
   return { ...action, ...state }
 }
 
-function markPhotoAsSelected(state, photoId) {
+function markPhotosAsDisplayed(state, photoIds) {
+  const newPhotos = _.map(photoIds, (photoId) => {
+    return {
+      [photoId]: {
+        ...state[photoId],
+        displayed: true
+      }
+    }
+  })
+  const newPhotosDict = Object.assign({}, ...newPhotos)
   return {
     ...state,
-    [photoId]: {
-      ...state[photoId],
-      selected: true
-    }
+    ...newPhotosDict
   }
 }
 
 function entities(state = {}, action) {
   switch (action.type) {
+    case DISPLAY_PHOTOS:
+      return {
+        ...state,
+        photos: markPhotosAsDisplayed(state.photos, action.photoIds)
+      }
     case RECEIVE_PHOTOS:
       const data = _.map(action.photos, formatData)
       const normalizedData = normalize(data, entitySchema).entities
@@ -63,7 +74,7 @@ function entities(state = {}, action) {
     case SELECT_PHOTO:
       return {
         ...state,
-        photos: markPhotoAsSelected(state.photos, action.photoId)
+        photos: markPhotosAsDisplayed(state.photos, [action.photoId])
       }
     default:
       return state
@@ -76,17 +87,36 @@ export const rootReducer = combineReducers({
   entities
 })
 
+export function getSelectedPhoto(state) {
+  return state.entities.photos[state.selectedPhoto]
+}
+
+function getUndisplayedPhotos(state) {
+  _.reject(state.entities.photos, {displayed: true})
+}
+
+function getUsablePhotos(state, photoIds) {
+  const photos = _.map(photoIds, id => state[id])
+  return _.uniq(_.reject(photos, {displayed: true}))
+}
+
 export function getRelatedPhotos(state) {
   if (state.isFetching.photos || state.isFetching.likes) {
     return []
   }
 
   const user = state.entities.users[state.entities.photos[state.selectedPhoto].user]
-  const userPhotos = _.map(user.photos, (photoId) => state.entities.photos[photoId])
-  const userLikes = _.map(user.likes, (photoId) => state.entities.photos[photoId])
+  const userPhotos = getUsablePhotos(state.entities.photos, user.photos)
 
-  const potentialPhotos = _.uniq(_.concat(userPhotos, userLikes))
-  const relatedPhotos = _.reject(potentialPhotos, {selected: true})
+  // exclude self-likes
+  const userLikes = _.reject(
+    getUsablePhotos(state.entities.photos, user.likes),
+    {user: user}
+  )
 
-  return _.sampleSize(relatedPhotos, 3)
+  // try to enforce 2/3 likes when possible
+  // to prevent single-user loops
+  const relatedPhotos = _.concat(userLikes.slice(0, 2), userPhotos, userLikes.slice(2))
+
+  return relatedPhotos.slice(0, 3)
 }

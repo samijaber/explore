@@ -1,29 +1,32 @@
 import React from 'react'
 import { connect } from 'react-redux'
-
-import './App.css'
+import { css, StyleSheet } from 'aphrodite'
 
 import { GraphContainer } from '../../containers/GraphContainer'
 import { ButtonContainer } from '../../containers/ButtonContainer'
-import { Graph } from '../../components/Graph'
+import { AppFooter } from '../../components/AppFooter'
+
+const styles = StyleSheet.create({
+  main: {
+    margin: "0",
+    paddingTop: "1%",
+    fontFamily: "sans-serif"
+  }
+})
 
 const AppComponent = ({selectedPhoto}) => {
   if (selectedPhoto) {
     return (
-      <div className="App">
+      <div className={css(styles.main)}>
         <GraphContainer />
+        <AppFooter />
       </div>
     )
-    // const relatedPhotos = [{id: "2"}, {id: "3"}, {id: "4"}]
-    // return (
-    //   <div className="App">
-    //     <Graph selectedPhoto={selectedPhoto} relatedPhotos={relatedPhotos} />
-    //   </div>
-    // )
   } else {
     return (
-      <div className="App">
+      <div className={css(styles.main)}>
         <ButtonContainer />
+        <AppFooter />
       </div>
     )
   }

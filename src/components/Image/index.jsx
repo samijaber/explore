@@ -1,29 +1,61 @@
 import React from 'react'
 import { StyleSheet, css } from 'aphrodite'
-import {
-  merge, slideInDown, fadeIn
-} from 'react-animations'
+import { fadeIn } from 'react-animations'
 
-const slideInDownWithFade = merge(slideInDown, fadeIn)
+import { ImageFooter } from '../ImageFooter'
 
 const styles = StyleSheet.create({
-  fitToWidth: {
-    width: 'auto',
-    height: '100%'
+  imgContainer: {
+    textAlign: 'center',
+    animationName: fadeIn,
+    animationDuration: '3s',
+    width: "33%",
+    height: "50%"
   },
-  slideDown: {
-    animationName: slideInDownWithFade,
-    animationDuration: '1s'
+  bigMargins: {
+    marginLeft: '30%',
+    marginRight: '30%',
+    marginBottom: '5%'
   },
+  relatedNode: {
+    maxHeight: "100%"
+  },
+  centerNode: {
+    maxHeight: "100%"
+  }
 })
 
-export const Image = ({url, photoId, userId, handleClick}) =>
-  <img
-    className={css(styles.fitToWidth, styles.slideDown)}
-    role="presentation"
-    onClick={(e) => {
-      e.preventDefault()
-      handleClick(photoId, userId)
-    }}
-    src={url}
-  />
+export class Image extends React.Component {
+  constructor(props) {
+    super(props)
+    this._handleClick = this._handleClick.bind(this)
+  }
+
+  _handleClick(e) {
+    e.preventDefault()
+    if (this.props.handleClick) {
+      this.props.handleClick(this.props.photo)
+    }
+  }
+
+  render() {
+    return (
+      <div
+        className={css(styles.imgContainer,
+          (!this.props.nextNode && styles.bigMargins)
+        )}
+      >
+        <img
+          className={css(this.props.nextNode? styles.relatedNode : styles.centerNode)}
+          role="presentation"
+          onClick={this._handleClick}
+          src={this.props.photo.urls.small}
+        />
+        <ImageFooter
+          photoId={this.props.photo.id}
+          username={this.props.photo.user}
+        />
+      </div>
+    )
+  }
+}
