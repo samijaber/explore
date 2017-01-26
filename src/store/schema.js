@@ -1,46 +1,58 @@
 import { schema } from 'normalizr'
 import _ from 'lodash'
 
-// adds array of photo IDs to entity
-const addPhotoId = (value, parentPhoto, key) => {
+// adds array of photo refs to user
+const userProcessStrategy = (value, parentPhoto, key) => {
+  switch (key) {
+    case 'user':
+      return { ...value, photos: [ parentPhoto.id ]}
+    case 'likedBy':
+      return { ...value, likedPhotos: [ parentPhoto.id ]}
+    default:
+      return value
+  }
+}
+
+/*
+// This function will merge two user instances,
+// while correctly concatenating its photos and likes arrays
+*/
+export const userMergeStrategy = (entityA = {}, entityB = {}) => {
   return {
-    ...value,
-    photos: [ parentPhoto.id ]
+    ...entityA,
+    ...entityB,
+    photos: [ ...(entityA.photos || []), ...(entityB.photos || [])],
+    likedPhotos: [ ...(entityA.likedPhotos || []), ...(entityB.likedPhotos || [])]
   }
 }
 
 const userSchema = new schema.Entity('users', {}, {
-  processStrategy: addPhotoId
+  processStrategy: userProcessStrategy,
+  mergeStrategy: userMergeStrategy,
+  idAttribute: 'username'
 })
 
-const categorySchema = new schema.Entity('categories', {}, {
-  processStrategy: addPhotoId
-})
-
+/*
 // this schema represents an array of photos
 // which is what all API calls we make will return
+*/
 export const entitySchema = [ new schema.Entity('photos', {
   user: userSchema,
-  categories: [ categorySchema ]
+  likedBy: userSchema
 }) ]
 
-const props = {
-  photo: ['id', 'urls', 'likes'],
-  category: ['id', 'title', 'photo_count'],
-  user: ['id', 'username', 'name', 'bio', 'total_photos']
-}
 
-const formatObject = (data, entityName) => {
-  return _.pick(data, props[entityName])
+// helper functions to clean up API data
+const props = {
+  photo: ['id', 'urls', 'likes', 'likedBy'],
+  user: ['id', 'username', 'name', 'bio', 'total_photos', 'total_likes']
 }
-const formatPhoto = (photo) => formatObject(photo, 'photo')
-const formatCategory = (category) => formatObject(category, 'category')
-const formatUser = (user) => formatObject(user, 'user')
+const formatPhoto = (photo) => _.pick(photo, props['photo'])
+const formatUser = (user) => _.pick(user, props['user'])
 
 export const formatData = (photo) => {
   return {
     ...formatPhoto(photo),
-    categories: _.map(photo.categories, formatCategory),
     user: formatUser(photo.user)
   }
 }

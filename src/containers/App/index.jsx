@@ -3,22 +3,28 @@ import { connect } from 'react-redux'
 
 import './App.css'
 
-import { Graph } from '../../containers/Graph'
-import { InitialPhotoSearch } from '../../containers/InitialPhotoSearch'
+import { GraphContainer } from '../../containers/GraphContainer'
+import { ButtonContainer } from '../../containers/ButtonContainer'
+import { Graph } from '../../components/Graph'
 
 const AppComponent = ({selectedPhoto}) => {
   if (selectedPhoto) {
     return (
-    <div className="App">
-      <Graph />
-    </div>
+      <div className="App">
+        <GraphContainer />
+      </div>
     )
-
+    // const relatedPhotos = [{id: "2"}, {id: "3"}, {id: "4"}]
+    // return (
+    //   <div className="App">
+    //     <Graph selectedPhoto={selectedPhoto} relatedPhotos={relatedPhotos} />
+    //   </div>
+    // )
   } else {
     return (
-    <div className="App">
-      <InitialPhotoSearch />
-    </div>
+      <div className="App">
+        <ButtonContainer />
+      </div>
     )
   }
 }

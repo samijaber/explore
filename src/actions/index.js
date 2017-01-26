@@ -3,19 +3,17 @@ import _ from 'lodash'
 import { unsplash, toJson } from '../utils/unsplash'
 
 export const REQUEST_PHOTOS = 'REQUEST_PHOTOS'
-function requestPhotos(query) {
+function requestPhotos() {
   return {
-    type: REQUEST_PHOTOS,
-    ...query
+    type: REQUEST_PHOTOS
   }
 }
 
 export const RECEIVE_PHOTOS = 'RECEIVE_PHOTOS'
-function receivePhotos({photos, nextStep, related = false}) {
+function receivePhotos(photos, origin) {
   return {
     type: RECEIVE_PHOTOS,
-    nextStep,
-    related,
+    from: origin,
     photos
   }
 }
@@ -28,66 +26,50 @@ function selectPhoto(photoId) {
   }
 }
 
-function shouldFetchRelatedPhotos(state, photoId) {
-  // TODO: check if related photos have been fetched already
-  return true
-}
-
-function fetchRelatedPhotos(state, photoId) {
+function fetchUserPhotos(username) {
   return function (dispatch) {
-    let apiCall, nextStep
-    const selectedPhoto = state.entities.photos[state.selectedPhoto]
-    const user = state.entities.users[selectedPhoto.user]
-    if (
-      (state.nextStep === 'user' && user.total_photos > 10) ||
-      selectedPhoto.categories.length === 0
-    ) {
-      nextStep = 'category'
-      apiCall = unsplash.users.photos(user.username, 1, 10, 'popular')
-      dispatch(requestPhotos({username: user.username}))
-    } else {
-      nextStep = 'user'
-      // TODO: try getting 1 from each category if multiple
-      const category = selectedPhoto.categories[0]
-      apiCall = unsplash.categories.categoryPhotos(category, 1, 10)
-      dispatch(requestPhotos({category: category}))
-    }
-
-    return apiCall
+    return unsplash.users.photos(username, 1, 30, 'popular')
       .then(toJson)
-      .then( data => {
-        // exclude selected photo if in array
-        const photos = _.reject(data, {id: photoId})
-        dispatch(receivePhotos({photos, nextStep, related: true}))
+      .then( photos => {
+        dispatch(receivePhotos(photos, "user photos"))
       })
   }
 }
 
-function fetchRelatedPhotosIfNeeded(photoId) {
-  return (dispatch, getState) => {
-    const state = getState()
-    if (shouldFetchRelatedPhotos(state, photoId)) {
-      return dispatch(fetchRelatedPhotos(state, photoId))
-    }
+function fetchUserLikes(username) {
+  return function (dispatch) {
+    return unsplash.users.likes(username, 1, 30, 'popular')
+      .then(toJson)
+      .then( photos => {
+        const PhotosWithLikerId = _.map(photos, photo => {
+          return { ...photo, likedBy: { username } }
+        })
+        dispatch(receivePhotos(PhotosWithLikerId, "user likes"))
+      })
   }
 }
 
-export function selectPhotoAndFetchRelated(photoId) {
+function fetchNextBatch(username) {
   return function (dispatch) {
-    // clear relatedPhotoIds for new select?
+    dispatch(fetchUserPhotos(username))
+    dispatch(fetchUserLikes(username))
+  }
+}
+
+export function selectPhotoAndFetchRelated(photoId, username) {
+  return function (dispatch) {
     dispatch(selectPhoto(photoId))
-    dispatch(fetchRelatedPhotosIfNeeded(photoId))
+    dispatch(fetchNextBatch(username))
   }
 }
 
-export function fetchInitialPhoto(keyword) {
+export function initialSearch() {
   return function (dispatch) {
-    dispatch(requestPhotos(keyword))
-    return unsplash.photos.getRandomPhoto({ query: keyword, featured: true })
+    return unsplash.photos.getRandomPhoto({ featured: true })
       .then(toJson)
       .then( photo => {
-        dispatch(receivePhotos({photos: [photo]}))
-        dispatch(selectPhotoAndFetchRelated(photo.id))
+        dispatch(receivePhotos([photo], "random photo"))
+        dispatch(selectPhotoAndFetchRelated(photo.id, photo.user.username))
       })
   }
 }

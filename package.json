@@ -10,11 +10,14 @@
     "react-scripts": "0.8.5"
   },
   "dependencies": {
+    "aphrodite": "^1.1.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "normalizr": "^3.1.0",
     "react": "^15.4.2",
+    "react-animations": "^0.1.0",
     "react-dom": "^15.4.2",
+    "react-flip-move": "^2.7.4",
     "react-redux": "^5.0.2",
     "redux": "^3.6.0",
     "redux-logger": "^2.7.4",
