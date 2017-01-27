@@ -4,7 +4,8 @@ import _ from 'lodash'
 
 import {
   RECEIVE_PHOTOS, SELECT_PHOTO,
-  DISPLAY_PHOTOS, RESET_STATE
+  CANCEL_REQUEST, DISPLAY_PHOTOS,
+  RESET_STATE
 } from '../actions'
 import { entitySchema, formatData, userMergeStrategy } from '../store/schema'
 
@@ -33,6 +34,8 @@ function isFetching(state = {}, action) {
       } else {
         return state
       }
+    case CANCEL_REQUEST:
+      return { photos: false, likes: false }
     default:
       return state
   }
@@ -118,7 +121,11 @@ export function getRelatedPhotos(state) {
   return relatedPhotos.slice(0, 3)
 }
 
-function getUsablePhotos(state, photoIds) {
+/*
+// for a list of photo IDs, returns the photo objects
+// that can be used as new graph nodes
+*/
+export function getUsablePhotos(state, photoIds) {
   const photos = _.map(photoIds, id => state[id])
   return _.uniq(_.reject(photos, {displayed: true}))
 }

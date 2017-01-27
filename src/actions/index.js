@@ -1,8 +1,9 @@
 import _ from 'lodash'
 
 import { unsplash, toJson } from '../utils/unsplash'
+import { getUsablePhotos } from '../reducers'
 
-export const REQUEST_ALTERNATE_PHOTOS = 'REQUEST_ALTERNATE_PHOTOS'
+const REQUEST_ALTERNATE_PHOTOS = 'REQUEST_ALTERNATE_PHOTOS'
 function requestAlternatePhotos(username) {
   return {
     type: REQUEST_ALTERNATE_PHOTOS,
@@ -32,6 +33,13 @@ export function displayPhotos(photoIds) {
   return {
     type: DISPLAY_PHOTOS,
     photoIds
+  }
+}
+
+export const CANCEL_REQUEST = 'CANCEL_REQUEST'
+function cancelRequest() {
+  return {
+    type: CANCEL_REQUEST
   }
 }
 
@@ -98,10 +106,30 @@ function fetchNextBatch(username) {
   }
 }
 
+function needsMorePhotos(state, username) {
+  const user = state.entities.users[username]
+  const allPhotoIds = _.concat(user.photos, user.likedPhotos)
+  if (getUsablePhotos(state.entities.photos, allPhotoIds).length < 3) {
+    return true
+  } else {
+    return false
+  }
+}
+
+function fetchNextBatchIfNeeded(username) {
+  return (dispatch, getState) => {
+    if (needsMorePhotos(getState(), username)) {
+      dispatch(fetchNextBatch(username))
+    } else {
+      dispatch(cancelRequest())
+    }
+  }
+}
+
 export function selectPhotoAndFetchRelated(photo) {
   return function (dispatch) {
     dispatch(selectPhoto(photo.id))
-    dispatch(fetchNextBatch(photo.user))
+    dispatch(fetchNextBatchIfNeeded(photo.user))
   }
 }
 
