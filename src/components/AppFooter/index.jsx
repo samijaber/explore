@@ -18,7 +18,11 @@ const styles = StyleSheet.create({
 
 export const AppFooter = () =>
   <div className={css(styles.footer)}>
-    {"Made by Sami. Photographs from "}
+    {"Made by "}
+    <A href="https://github.com/samijaber/explore">
+      Sami
+    </A>
+    {". Photographs from "}
     <A href="https://unsplash.com">
       Unsplash
     </A>
