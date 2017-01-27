@@ -2,10 +2,11 @@ import _ from 'lodash'
 
 import { unsplash, toJson } from '../utils/unsplash'
 
-export const REQUEST_PHOTOS = 'REQUEST_PHOTOS'
-function requestPhotos() {
+export const REQUEST_ALTERNATE_PHOTOS = 'REQUEST_ALTERNATE_PHOTOS'
+function requestAlternatePhotos(username) {
   return {
-    type: REQUEST_PHOTOS
+    type: REQUEST_ALTERNATE_PHOTOS,
+    username: username
   }
 }
 
@@ -34,6 +35,13 @@ export function displayPhotos(photoIds) {
   }
 }
 
+export const RESET_STATE = 'RESET_STATE'
+export function resetState() {
+  return {
+    type: RESET_STATE
+  }
+}
+
 function fetchUserPhotos(username) {
   return function (dispatch) {
     return unsplash.users.photos(username, 1, 30, 'popular')
@@ -44,15 +52,41 @@ function fetchUserPhotos(username) {
   }
 }
 
+function fetchLikesAlternatives(username) {
+  return function (dispatch) {
+    dispatch(requestAlternatePhotos(username))
+    return unsplash.photos.listPhotos(getRndPage(), 50, 'popular')
+      .then(toJson)
+      .then( photos => {
+        // pretend like inactive user likes all those photos
+        const photosExclSelfLikes = _.reject(photos, { user: {username: username}})
+        const photosWithLikerId = _.map(photosExclSelfLikes, photo => {
+          return { ...photo, likedBy: { username } }
+        })
+        dispatch(receivePhotos(photosWithLikerId, "user likes"))
+      })
+  }
+}
+
 function fetchUserLikes(username) {
   return function (dispatch) {
     return unsplash.users.likes(username, 1, 30, 'popular')
       .then(toJson)
       .then( photos => {
-        const PhotosWithLikerId = _.map(photos, photo => {
-          return { ...photo, likedBy: { username } }
-        })
-        dispatch(receivePhotos(PhotosWithLikerId, "user likes"))
+        // exclude user's own photos
+        // some people really like their work
+        const photosExclSelfLikes = _.reject(photos, { user: {username: username}})
+
+        if (photosExclSelfLikes.length >= 2) {
+          const photosWithLikerId = _.map(photos, photo => {
+            return { ...photo, likedBy: { username } }
+          })
+          dispatch(receivePhotos(photosWithLikerId, "user likes"))
+        } else {
+          // hack: if user liked no pics
+          // get random pics and attribute to them
+          dispatch(fetchLikesAlternatives(username))
+        }
       })
   }
 }
@@ -73,17 +107,25 @@ export function selectPhotoAndFetchRelated(photo) {
 
 export function initialSearch() {
   return function (dispatch) {
-    return unsplash.photos.listPhotos(1, 50, 'popular')
+    return unsplash.photos.listPhotos(getRndPage(), 50, 'popular')
       .then(toJson)
       .then( photos => {
-        // pick a photo whose user won't be a dead-end
-        const photo = _.sample(_.reject(photos,
-          photo =>
-            (photo.user.total_likes + photo.user.total_photos > 10) &&
-            photo.user.total_likes > 0
-        ))
+        const photo = _.sample(activeUser(photos))
         dispatch(receivePhotos(photos, "initial photo"))
         dispatch(selectPhotoAndFetchRelated({id: photo.id, user: photo.user.username}))
       })
   }
+}
+
+// helper to make sure photo uploader is not inactive
+function activeUser(photos) {
+  return _.filter( photos,
+    photo =>
+      (photo.user.total_likes + photo.user.total_photos > 10) &&
+      photo.user.total_likes > 0
+  )
+}
+
+function getRndPage() {
+  return Math.floor(Math.random() * 10) + 1
 }

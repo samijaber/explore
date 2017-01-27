@@ -10,17 +10,17 @@ const styles = StyleSheet.create({
     animationName: fadeIn,
     animationDuration: '3s',
     width: "33%",
-    height: "50%"
+    height: "50%",
+    '@media (max-height: 1024px)': {
+        height: "35%"
+    }
   },
   bigMargins: {
     marginLeft: '30%',
     marginRight: '30%',
     marginBottom: '5%'
   },
-  relatedNode: {
-    maxHeight: "100%"
-  },
-  centerNode: {
+  node: {
     maxHeight: "100%"
   }
 })
@@ -46,7 +46,7 @@ export class Image extends React.Component {
         )}
       >
         <img
-          className={css(this.props.nextNode? styles.relatedNode : styles.centerNode)}
+          className={css(styles.node)}
           role="presentation"
           onClick={this._handleClick}
           src={this.props.photo.urls.small}

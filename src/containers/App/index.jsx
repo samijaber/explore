@@ -3,14 +3,19 @@ import { connect } from 'react-redux'
 import { css, StyleSheet } from 'aphrodite'
 
 import { GraphContainer } from '../../containers/GraphContainer'
-import { ButtonContainer } from '../../containers/ButtonContainer'
+import { StartButton } from '../../containers/StartButton'
+import { ResetButton } from '../../containers/ResetButton'
 import { AppFooter } from '../../components/AppFooter'
 
 const styles = StyleSheet.create({
   main: {
-    margin: "0",
-    paddingTop: "1%",
-    fontFamily: "sans-serif"
+    // position: "relative",
+    height: "100%",
+    // paddingBottom: "30px", /* must be same height as the footer */
+    fontFamily: "'Nunito Sans', sans-serif"
+  },
+  wrap: {
+    minHeight: "100%"
   }
 })
 
@@ -18,14 +23,19 @@ const AppComponent = ({selectedPhoto}) => {
   if (selectedPhoto) {
     return (
       <div className={css(styles.main)}>
-        <GraphContainer />
+        <div className={css(styles.wrap)}>
+          <ResetButton />
+          <GraphContainer />
+        </div>
         <AppFooter />
       </div>
     )
   } else {
     return (
       <div className={css(styles.main)}>
-        <ButtonContainer />
+        <div className={css(styles.wrap)}>
+          <StartButton />
+        </div>
         <AppFooter />
       </div>
     )

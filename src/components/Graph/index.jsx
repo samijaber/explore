@@ -6,19 +6,20 @@ import _ from 'lodash'
 import { Image } from '../../components/Image'
 
 const styles = StyleSheet.create({
-  flexbox: {
+  main: {
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'center',
     flexWrap: 'wrap',
+    padding: "1% 0 0 0"
   },
   large: {
-    '@media (min-width: 1024px)': {
+    '@media (min-height: 1024px)': {
         height: "740px"
     }
   },
   medium: {
-    '@media (max-width: 1024px)': {
+    '@media (max-height: 1024px)': {
         height: "600px"
     }
   },
@@ -46,7 +47,7 @@ export class Graph extends React.Component {
       />
     )
     return (
-      <FlipMove className={css(styles.flexbox, styles.large, styles.medium)}>
+      <FlipMove className={css(styles.main, styles.large, styles.medium)}>
         <Image
           key={this.props.selectedPhoto.urls.small}
           photo={this.props.selectedPhoto}
