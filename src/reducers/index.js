@@ -71,17 +71,17 @@ function entities(state = {}, action) {
         ...state,
         photos: markPhotosAsDisplayed(state.photos, action.photoIds)
       }
+    case SELECT_PHOTO:
+      return {
+        ...state,
+        photos: markPhotosAsDisplayed(state.photos, [action.photoId])
+      }
     case RECEIVE_PHOTOS:
       const data = _.map(action.photos, formatData)
       const normalizedData = normalize(data, entitySchema).entities
       return {
         users: users(state.users, normalizedData.users),
         photos: photos(state.photos, normalizedData.photos)
-      }
-    case SELECT_PHOTO:
-      return {
-        ...state,
-        photos: markPhotosAsDisplayed(state.photos, [action.photoId])
       }
     default:
       return state
@@ -98,6 +98,10 @@ export function getSelectedPhoto(state) {
   return state.entities.photos[state.selectedPhoto]
 }
 
+/*
+// returns 3 photos uploaded or liked by the same user
+// as the one who took the current selectedPhoto
+*/
 export function getRelatedPhotos(state) {
   if (state.isFetching.photos || state.isFetching.likes) {
     return []

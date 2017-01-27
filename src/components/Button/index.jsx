@@ -14,26 +14,26 @@ const styles = StyleSheet.create({
     animationName: fadeIn,
     animationDuration: '3s'
   },
+  alignAndForeground: {
+    textAlign: "center",
+    zIndex: "4"
+  },
   middleCenter: {
     position: 'fixed',
     top: "50%",
     left: "50%",
-    transform: "translate(-50%, -50%)",
-    textAlign: "center",
-    zIndex: "4"
+    transform: "translate(-50%, -50%)"
   },
   topRight: {
     position: "absolute",
     top: "5%",
-    right: "5%",
-    textAlign: "center",
-    zIndex: "4"
+    right: "5%"
   }
 
 })
 
 export const Button = ({handleClick, children, location, description}) =>
-  <div className={css(styles.fadeIn,
+  <div className={css(styles.fadeIn, styles.alignAndForeground,
     location === 'topRight' ? styles.topRight : styles.middleCenter
   )}>
     <div

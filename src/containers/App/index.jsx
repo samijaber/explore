@@ -9,9 +9,7 @@ import { AppFooter } from '../../components/AppFooter'
 
 const styles = StyleSheet.create({
   main: {
-    // position: "relative",
     height: "100%",
-    // paddingBottom: "30px", /* must be same height as the footer */
     fontFamily: "'Nunito Sans', sans-serif"
   },
   wrap: {

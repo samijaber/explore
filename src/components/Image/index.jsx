@@ -33,6 +33,9 @@ const styles = StyleSheet.create({
   },
   node: {
     maxHeight: "100%"
+  },
+  pointer: {
+    cursor: 'pointer'
   }
 })
 
@@ -55,7 +58,7 @@ export class Image extends React.Component {
         className={css(
           styles.imgContainer,
           styles.large, styles.medium, styles.small,
-          (!this.props.nextNode && styles.bigMargins)
+          this.props.nextNode? styles.pointer : styles.bigMargins
         )}
       >
         <img
