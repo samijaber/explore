@@ -25,7 +25,7 @@ const AppComponent = ({selectedPhoto}) => {
           <ResetButton />
           <GraphContainer />
         </div>
-        <AppFooter />
+        <AppFooter graphView={true}/>
       </div>
     )
   } else {

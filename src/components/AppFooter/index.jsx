@@ -13,11 +13,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     animationName: fadeIn,
     animationDuration: '3s'
+  },
+  xSmall: {
+    '@media (max-width: 500px)': {
+      display: 'none'
+    }
   }
 })
 
-export const AppFooter = () =>
-  <div className={css(styles.footer)}>
+export const AppFooter = ({graphView}) =>
+  <div className={css(styles.footer, graphView && styles.xSmall)}>
     {"Made by "}
     <A href="https://github.com/samijaber/explore">
       Sami

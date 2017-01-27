@@ -25,9 +25,14 @@ const styles = StyleSheet.create({
     transform: "translate(-50%, -50%)"
   },
   topRight: {
-    position: "absolute",
-    top: "5%",
-    right: "5%"
+    '@media (min-width: 500px)': {
+      position: "absolute",
+      top: "5%",
+      right: "5%"
+    },
+    '@media (max-width: 499px)': {
+      marginTop: "3%"
+    }
   }
 
 })

@@ -11,6 +11,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around'
   },
+  xSmall : {
+    '@media (max-width: 500px)': {
+      justifyContent: 'center'
+    }
+  },
   svgSmall: {
     maxHeight: '30px',
     maxWidth: '30px'
@@ -19,9 +24,9 @@ const styles = StyleSheet.create({
 
 
 export const ImageFooter = ({username, photoId}) =>
-  <div className={css(styles.centerFlex)}>
+  <div className={css(styles.centerFlex, styles.xSmall)}>
     <A href={"https://unsplash.com/" + username}>
-       By @{username}
+       {"By @" + username + " "}
     </A>
     <A href={"https://unsplash.com/photos/" + photoId}>
       <img

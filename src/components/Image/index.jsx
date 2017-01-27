@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     animationName: fadeIn,
     animationDuration: '3s',
-    width: "33%",
+    width: "33%"
   },
   large: {
     '@media (min-height: 1024px)': {
@@ -26,13 +26,22 @@ const styles = StyleSheet.create({
         // height: "20%"
     }
   },
+  xSmall : {
+    '@media (max-width: 500px)': {
+        height: "50%",
+        width: "53%"
+    }
+  },
   bigMargins: {
     marginLeft: '30%',
     marginRight: '30%',
     marginBottom: '5%'
   },
   node: {
-    maxHeight: "100%"
+    maxHeight: "100%",
+    '@media (max-width: 500px)': {
+      maxHeight: "75%"
+    }
   },
   pointer: {
     cursor: 'pointer'
@@ -57,7 +66,7 @@ export class Image extends React.Component {
       <div
         className={css(
           styles.imgContainer,
-          styles.large, styles.medium, styles.small,
+          styles.large, styles.medium, styles.small, styles.xSmall,
           this.props.nextNode? styles.pointer : styles.bigMargins
         )}
       >
