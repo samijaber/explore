@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
   small: {
     '@media (max-height: 800px)': {
-        height: "400px"
+        height: "540px"
     }
   }
 })
