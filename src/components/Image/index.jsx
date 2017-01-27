@@ -10,9 +10,20 @@ const styles = StyleSheet.create({
     animationName: fadeIn,
     animationDuration: '3s',
     width: "33%",
-    height: "50%",
+  },
+  large: {
+    '@media (min-height: 1024px)': {
+        height: "50%"
+    }
+  },
+  medium: {
     '@media (max-height: 1024px)': {
         height: "35%"
+    }
+  },
+  small : {
+    '@media (max-height: 800px)': {
+        // height: "20%"
     }
   },
   bigMargins: {
@@ -41,7 +52,9 @@ export class Image extends React.Component {
   render() {
     return (
       <div
-        className={css(styles.imgContainer,
+        className={css(
+          styles.imgContainer,
+          styles.large, styles.medium, styles.small,
           (!this.props.nextNode && styles.bigMargins)
         )}
       >

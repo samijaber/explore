@@ -23,6 +23,11 @@ const styles = StyleSheet.create({
         height: "600px"
     }
   },
+  small: {
+    '@media (max-height: 800px)': {
+        height: "400px"
+    }
+  }
 })
 
 export class Graph extends React.Component {
@@ -47,7 +52,11 @@ export class Graph extends React.Component {
       />
     )
     return (
-      <FlipMove className={css(styles.main, styles.large, styles.medium)}>
+      <FlipMove
+        className={css(
+          styles.main, styles.large, styles.medium, styles.small
+        )}
+      >
         <Image
           key={this.props.selectedPhoto.urls.small}
           photo={this.props.selectedPhoto}

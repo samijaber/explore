@@ -1,5 +1,6 @@
 {
-  "name": "unsplash-discover-es6",
+  "name": "explore",
+  "homepage": "https://samijaber.github.io/explore",
   "version": "0.1.0",
   "private": true,
   "eslintConfig": {
@@ -29,6 +30,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "babel": "babel"
+    "babel": "babel",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   }
 }
